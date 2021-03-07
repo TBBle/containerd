@@ -472,7 +472,7 @@ func (s *snapshotter) createScratchLayer(ctx context.Context, snDir string, pare
 	if _, err := os.Stat(templateDiffDisk); os.IsNotExist(err) {
 		// Scratch disk not present so lets make it.
 		if err := computestorage.SetupContainerBaseLayer(ctx, baseLayer, templateBase, templateDiffDisk, 1); err != nil {
-			return errors.Wrapf(err, "failed to create scratch vhdx at %q", baseLayer)
+			return errors.Wrapf(err, "failed to create scratch vhdxs (%q + %q) at %q", templateBase, templateDiffDisk, baseLayer)
 		}
 	}
 
