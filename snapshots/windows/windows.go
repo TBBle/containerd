@@ -410,7 +410,7 @@ func (s *snapshotter) createSnapshot(ctx context.Context, kind snapshots.Kind, k
 		} else {
 			// A view is just a read-write snapshot with a _really_ small sandbox, since we cannot actually
 			// make a read-only mount or junction point. https://superuser.com/q/881544/112473
-			sizeGB = 1
+			sizeGB = 20
 		}
 
 		var makeUVMScratch bool
