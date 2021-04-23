@@ -78,10 +78,7 @@ func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) 
 
 func makeTest(name string, snapshotterFn func(ctx context.Context, root string) (snapshots.Snapshotter, func() error, error), fn func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string)) func(t *testing.T) {
 	return func(t *testing.T) {
-		if runtime.GOOS != "windows" {
-			// HACK! Parallel snapshot testsuite is having issues. @tbble thinks this is a HCS-level problem.
-			t.Parallel()
-		}
+		t.Parallel()
 
 		ctx := logtest.WithT(context.Background(), t)
 		ctx = namespaces.WithNamespace(ctx, "testsuite")
