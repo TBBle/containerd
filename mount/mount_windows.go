@@ -90,7 +90,7 @@ func (m *Mount) Mount(target string) (err error) {
 	// Add an Alternate Data Stream to record the layer source.
 	// See https://docs.microsoft.com/en-au/archive/blogs/askcore/alternate-data-streams-in-ntfs
 	// for details on Alternate Data Streams.
-	if err = ioutil.WriteFile(filepath.Clean(target)+":"+sourceStreamName, []byte(m.Source), 0666); err != nil {
+	if err = ioutil.WriteFile(filepath.Clean(target)+"_"+sourceStreamName, []byte(m.Source), 0666); err != nil {
 		return errors.Wrapf(err, "failed to record source for layer %s", m.Source)
 	}
 
@@ -131,13 +131,13 @@ func Unmount(mount string, flags int) error {
 		return errors.Wrapf(bindUnmount(mount), "failed to bind-unmount from %s", mount)
 	}
 
-	layerPathb, err := ioutil.ReadFile(mount + ":" + sourceStreamName)
+	layerPathb, err := ioutil.ReadFile(mount + "_" + sourceStreamName)
 	if err != nil {
 		return errors.Wrapf(err, "failed to retrieve source for layer %s", mount)
 	}
 
-	if err := os.Remove(mount + ":" + sourceStreamName); err != nil {
-		return errors.Wrapf(err, "failed to remove alternate data string from %s", mount)
+	if err := os.Remove(mount + "_" + sourceStreamName); err != nil {
+		return errors.Wrapf(err, "failed to remove alternate data stream from %s", mount)
 	}
 
 	layerPath := string(layerPathb)
