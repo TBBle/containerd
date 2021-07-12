@@ -1153,7 +1153,7 @@ func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T,
 	return func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string) {
 
 		parent := ""
-		for i := 1; i <= 127; i++ {
+		for i := 0; i <= 127; i++ {
 			preparing := filepath.Join(work, fmt.Sprintf("prepare-layer-%d", i))
 			if err := os.MkdirAll(preparing, 0777); err != nil {
 				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
