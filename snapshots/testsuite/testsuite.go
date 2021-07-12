@@ -37,6 +37,7 @@ import (
 	"github.com/containerd/containerd/pkg/testutil"
 	"github.com/containerd/containerd/snapshots"
 	"github.com/containerd/continuity/fs/fstest"
+	"go.opencensus.io/trace"
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
 )
@@ -48,6 +49,11 @@ type SnapshotterFunc func(ctx context.Context, root string) (snapshots.Snapshott
 func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) {
 	restoreMask := clearMask()
 	defer restoreMask()
+
+	if testing.Verbose() {
+		trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+		trace.RegisterExporter(&LogrusExporter{})
+	}
 
 	for i := 1; i <= 10; i++ {
 		t.Run(fmt.Sprintf("128LayersLockstep_%02d", i), makeTest(name, snapshotterFn, check128LayersLockstep(name)))
