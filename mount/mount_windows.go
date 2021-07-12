@@ -154,6 +154,46 @@ func Unmount(mount string, flags int) error {
 		return errors.Wrapf(err, "failed to unprepare layer %s", mount)
 	}
 
+	/*
+		for {
+			hcerr := hcsshim.UnprepareLayer(di, layerID)
+			if hcerr == nil {
+				continue
+			}
+
+			if hcserror, ok := hcerr.(*hcsshim.HcsError); !ok || (hcserror.Err != windows.ERROR_DEV_NOT_EXIST && hcserror.Err != syscall.Errno(windows.ERROR_FLT_INSTANCE_NOT_FOUND)) {
+				return errors.Wrapf(hcerr, "failed to unprepare layer %s", mount)
+			}
+
+			break
+		}
+
+		if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+		}
+
+		if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+		}
+
+		if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+		}
+
+		if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+		}
+	*/
+
+	if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+		return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+	}
+
+	// Activate and deactivate the layer to ensure it's flushed to disk.
+	if err = hcsshim.ActivateLayer(di, layerID); err != nil {
+		return errors.Wrapf(err, "failed to activate layer %s", mount)
+	}
+
 	if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
 		return errors.Wrapf(err, "failed to deactivate layer %s", mount)
 	}

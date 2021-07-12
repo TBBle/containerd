@@ -74,6 +74,7 @@ func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) 
 	t.Run("RootPermission", makeTest(name, snapshotterFn, checkRootPermission))
 
 	t.Run("128LayersMount", makeTest(name, snapshotterFn, check128LayersMount(name)))
+	t.Run("128LayersMountAgain", makeTest(name, snapshotterFn, check128LayersMount(name)))
 }
 
 func makeTest(name string, snapshotterFn func(ctx context.Context, root string) (snapshots.Snapshotter, func() error, error), fn func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string)) func(t *testing.T) {

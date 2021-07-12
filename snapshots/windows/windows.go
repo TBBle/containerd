@@ -28,6 +28,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Microsoft/go-winio"
 	winfs "github.com/Microsoft/go-winio/pkg/fs"
@@ -44,6 +45,7 @@ import (
 	"github.com/containerd/continuity/fs"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
+	"golang.org/x/sys/windows"
 )
 
 func init() {
@@ -509,8 +511,29 @@ func (s *snapshotter) convertScratchToReadOnlyLayer(ctx context.Context, snapsho
 		writer.CloseWithError(err)
 	}()
 
-	if _, err := ociwclayer.ImportLayerFromTar(ctx, reader, path, parentLayerPaths); err != nil {
-		return errors.Wrap(err, "failed to reimport snapshot")
+	attemptCount := 1
+	for {
+		if _, err := ociwclayer.ImportLayerFromTar(ctx, reader, path, parentLayerPaths); err == nil {
+			break
+		} else if hcserror, ok := err.(*hcsshim.HcsError); attemptCount > 10 || !ok || hcserror.Err != windows.ERROR_SHARING_VIOLATION {
+			return errors.Wrap(err, "failed to reimport snapshot")
+		} else {
+			log.G(ctx).WithError(err).Debugf("ImportLayerFromTar attempt %d failed", attemptCount)
+		}
+		attemptCount += 1
+
+		var (
+			home, layerID = filepath.Split(path)
+			di            = hcsshim.DriverInfo{
+				HomeDir: home,
+			}
+		)
+
+		if detachErr := hcsshim.DeactivateLayer(di, layerID); detachErr != nil {
+			log.G(ctx).WithError(detachErr).Debugf("Failed to DeactivateLayer")
+		}
+
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	if _, err := io.Copy(ioutil.Discard, reader); err != nil {
