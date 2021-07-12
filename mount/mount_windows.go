@@ -136,14 +136,16 @@ func Unmount(mount string, flags int) error {
 		return errors.Wrapf(err, "failed to retrieve source for layer %s", mount)
 	}
 
-	if err := os.Remove(mount + ":" + sourceStreamName); err != nil {
-		return errors.Wrapf(err, "failed to remove alternate data string from %s", mount)
-	}
-
 	layerPath := string(layerPathb)
 
 	if err := deleteVolumeMountPoint(mount); err != nil {
 		return errors.Wrapf(err, "failed to release volume mount path for layer %s", mount)
+	}
+
+	// Doing this after deleting the Volume Mount Point, as if that fails, recovery may
+	// depend on this data.
+	if err := os.Remove(mount + ":" + sourceStreamName); err != nil {
+		return errors.Wrapf(err, "failed to remove alternate data string from %s", mount)
 	}
 
 	var (
