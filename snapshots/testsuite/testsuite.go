@@ -55,7 +55,7 @@ func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) 
 		trace.RegisterExporter(&LogrusExporter{})
 	}
 
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 10; i++ {
 		t.Run(fmt.Sprintf("128LayersLockstep_%02d", i), makeTest(name, snapshotterFn, check128LayersLockstep(name)))
 	}
 	return
