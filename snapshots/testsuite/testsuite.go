@@ -49,37 +49,36 @@ func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) 
 	restoreMask := clearMask()
 	defer restoreMask()
 
-	/*
-		t.Run("Basic", makeTest(name, snapshotterFn, checkSnapshotterBasic))
-		t.Run("StatActive", makeTest(name, snapshotterFn, checkSnapshotterStatActive))
-		t.Run("StatComitted", makeTest(name, snapshotterFn, checkSnapshotterStatCommitted))
-		t.Run("TransitivityTest", makeTest(name, snapshotterFn, checkSnapshotterTransitivity))
-		t.Run("PreareViewFailingtest", makeTest(name, snapshotterFn, checkSnapshotterPrepareView))
-		t.Run("Update", makeTest(name, snapshotterFn, checkUpdate))
-		t.Run("Remove", makeTest(name, snapshotterFn, checkRemove))
-		t.Run("Walk", makeTest(name, snapshotterFn, checkWalk))
-
-		t.Run("LayerFileupdate", makeTest(name, snapshotterFn, checkLayerFileUpdate))
-		t.Run("RemoveDirectoryInLowerLayer", makeTest(name, snapshotterFn, checkRemoveDirectoryInLowerLayer))
-		t.Run("Chown", makeTest(name, snapshotterFn, checkChown))
-		t.Run("DirectoryPermissionOnCommit", makeTest(name, snapshotterFn, checkDirectoryPermissionOnCommit))
-		t.Run("RemoveIntermediateSnapshot", makeTest(name, snapshotterFn, checkRemoveIntermediateSnapshot))
-		t.Run("DeletedFilesInChildSnapshot", makeTest(name, snapshotterFn, checkDeletedFilesInChildSnapshot))
-		t.Run("MoveFileFromLowerLayer", makeTest(name, snapshotterFn, checkFileFromLowerLayer))
-		t.Run("Rename", makeTest(name, snapshotterFn, checkRename))
-
-		t.Run("ViewReadonly", makeTest(name, snapshotterFn, checkSnapshotterViewReadonly))
-
-		t.Run("StatInWalk", makeTest(name, snapshotterFn, checkStatInWalk))
-		t.Run("CloseTwice", makeTest(name, snapshotterFn, closeTwice))
-		t.Run("RootPermission", makeTest(name, snapshotterFn, checkRootPermission))
-
-		t.Run("128LayersMount", makeTest(name, snapshotterFn, check128LayersMount(name)))
-		t.Run("128LayersMountAgain", makeTest(name, snapshotterFn, check128LayersMount(name)))
-	*/
 	for i := 1; i <= 10; i++ {
-		t.Run(fmt.Sprintf("128LayersMount_%02d", i), makeTest(name, snapshotterFn, check128LayersMount(name)))
+		t.Run(fmt.Sprintf("128LayersLockstep_%02d", i), makeTest(name, snapshotterFn, check128LayersLockstep(name)))
 	}
+	return
+
+	t.Run("Basic", makeTest(name, snapshotterFn, checkSnapshotterBasic))
+	t.Run("StatActive", makeTest(name, snapshotterFn, checkSnapshotterStatActive))
+	t.Run("StatComitted", makeTest(name, snapshotterFn, checkSnapshotterStatCommitted))
+	t.Run("TransitivityTest", makeTest(name, snapshotterFn, checkSnapshotterTransitivity))
+	t.Run("PreareViewFailingtest", makeTest(name, snapshotterFn, checkSnapshotterPrepareView))
+	t.Run("Update", makeTest(name, snapshotterFn, checkUpdate))
+	t.Run("Remove", makeTest(name, snapshotterFn, checkRemove))
+	t.Run("Walk", makeTest(name, snapshotterFn, checkWalk))
+
+	t.Run("LayerFileupdate", makeTest(name, snapshotterFn, checkLayerFileUpdate))
+	t.Run("RemoveDirectoryInLowerLayer", makeTest(name, snapshotterFn, checkRemoveDirectoryInLowerLayer))
+	t.Run("Chown", makeTest(name, snapshotterFn, checkChown))
+	t.Run("DirectoryPermissionOnCommit", makeTest(name, snapshotterFn, checkDirectoryPermissionOnCommit))
+	t.Run("RemoveIntermediateSnapshot", makeTest(name, snapshotterFn, checkRemoveIntermediateSnapshot))
+	t.Run("DeletedFilesInChildSnapshot", makeTest(name, snapshotterFn, checkDeletedFilesInChildSnapshot))
+	t.Run("MoveFileFromLowerLayer", makeTest(name, snapshotterFn, checkFileFromLowerLayer))
+	t.Run("Rename", makeTest(name, snapshotterFn, checkRename))
+
+	t.Run("ViewReadonly", makeTest(name, snapshotterFn, checkSnapshotterViewReadonly))
+
+	t.Run("StatInWalk", makeTest(name, snapshotterFn, checkStatInWalk))
+	t.Run("CloseTwice", makeTest(name, snapshotterFn, closeTwice))
+	t.Run("RootPermission", makeTest(name, snapshotterFn, checkRootPermission))
+
+	t.Run("128LayersMount", makeTest(name, snapshotterFn, check128LayersMount(name)))
 }
 
 func makeTest(name string, snapshotterFn func(ctx context.Context, root string) (snapshots.Snapshotter, func() error, error), fn func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string)) func(t *testing.T) {
@@ -912,32 +911,32 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 			t.Skip("aufs tests have issues with whiteouts here on some CI kernels")
 		}
 		lowestApply := fstest.Apply(
-			// fstest.CreateFile("/bottom", []byte("way at the bottom\n"), 0777),
-			// fstest.CreateFile("/overwriteme", []byte("FIRST!\n"), 0777),
+			fstest.CreateFile("/bottom", []byte("way at the bottom\n"), 0777),
+			fstest.CreateFile("/overwriteme", []byte("FIRST!\n"), 0777),
 			fstest.CreateDir("/addhere", 0755),
-			// fstest.CreateDir("/onlyme", 0755),
-			// fstest.CreateFile("/onlyme/bottom", []byte("bye!\n"), 0777),
+			fstest.CreateDir("/onlyme", 0755),
+			fstest.CreateFile("/onlyme/bottom", []byte("bye!\n"), 0777),
 		)
 
 		appliers := []fstest.Applier{lowestApply}
 		for i := 1; i <= 127; i++ {
 			appliers = append(appliers, fstest.Apply(
-				// fstest.CreateFile("/overwriteme", []byte(fmt.Sprintf("%d WAS HERE!\n", i)), 0777),
+				fstest.CreateFile("/overwriteme", []byte(fmt.Sprintf("%d WAS HERE!\n", i)), 0777),
 				fstest.CreateFile(fmt.Sprintf("/addhere/file-%d", i), []byte("same\n"), 0755),
-				// fstest.RemoveAll("/onlyme"),
-				// fstest.CreateDir("/onlyme", 0755),
-				// fstest.CreateFile(fmt.Sprintf("/onlyme/file-%d", i), []byte("only me!\n"), 0777),
+				fstest.RemoveAll("/onlyme"),
+				fstest.CreateDir("/onlyme", 0755),
+				fstest.CreateFile(fmt.Sprintf("/onlyme/file-%d", i), []byte("only me!\n"), 0777),
 			))
 		}
 
-		// flat := filepath.Join(work, "flat")
-		// if err := os.MkdirAll(flat, 0777); err != nil {
-		// 	t.Fatalf("failed to create flat dir(%s): %+v", flat, err)
-		// }
+		flat := filepath.Join(work, "flat")
+		if err := os.MkdirAll(flat, 0777); err != nil {
+			t.Fatalf("failed to create flat dir(%s): %+v", flat, err)
+		}
 
 		// NOTE: add gc labels to avoid snapshots get removed by gc...
 		parent := ""
-		for i := range appliers {
+		for i, applier := range appliers {
 			preparing := filepath.Join(work, fmt.Sprintf("prepare-layer-%d", i))
 			if err := os.MkdirAll(preparing, 0777); err != nil {
 				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
@@ -954,31 +953,31 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 
 			t.Log("mount", preparing)
 
-			// preparingWorkDir := filepath.Join(preparing, "wcow_workaround")
-			// if err := os.MkdirAll(preparingWorkDir, 0777); err != nil {
-			// 	testutil.Unmount(t, preparing)
-			// 	t.Fatalf("[layer %d] failed to create workdir: %+v", i, err)
-			// }
+			preparingWorkDir := filepath.Join(preparing, "wcow_workaround")
+			if err := os.MkdirAll(preparingWorkDir, 0777); err != nil {
+				testutil.Unmount(t, preparing)
+				t.Fatalf("[layer %d] failed to create workdir: %+v", i, err)
+			}
 
-			// if err := fstest.CheckDirectoryEqual(preparingWorkDir, flat); err != nil {
-			// 	testutil.Unmount(t, preparing)
-			// 	t.Fatalf("[layer %d] preparing doesn't equal to flat before apply: %+v", i, err)
-			// }
+			if err := fstest.CheckDirectoryEqual(preparingWorkDir, flat); err != nil {
+				testutil.Unmount(t, preparing)
+				t.Fatalf("[layer %d] preparing doesn't equal to flat before apply: %+v", i, err)
+			}
 
-			// if err := applier.Apply(flat); err != nil {
-			// 	testutil.Unmount(t, preparing)
-			// 	t.Fatalf("[layer %d] failed to apply on flat dir: %+v", i, err)
-			// }
+			if err := applier.Apply(flat); err != nil {
+				testutil.Unmount(t, preparing)
+				t.Fatalf("[layer %d] failed to apply on flat dir: %+v", i, err)
+			}
 
-			// if err = applier.Apply(preparingWorkDir); err != nil {
-			// 	testutil.Unmount(t, preparing)
-			// 	t.Fatalf("[layer %d] failed to apply on preparing dir: %+v", i, err)
-			// }
+			if err = applier.Apply(preparingWorkDir); err != nil {
+				testutil.Unmount(t, preparing)
+				t.Fatalf("[layer %d] failed to apply on preparing dir: %+v", i, err)
+			}
 
-			// if err := fstest.CheckDirectoryEqual(preparingWorkDir, flat); err != nil {
-			// 	testutil.Unmount(t, preparing)
-			// 	t.Fatalf("[layer %d] preparing doesn't equal to flat after apply: %+v", i, err)
-			// }
+			if err := fstest.CheckDirectoryEqual(preparingWorkDir, flat); err != nil {
+				testutil.Unmount(t, preparing)
+				t.Fatalf("[layer %d] preparing doesn't equal to flat after apply: %+v", i, err)
+			}
 
 			testutil.Unmount(t, preparing)
 
@@ -1004,11 +1003,11 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 		}
 		defer testutil.Unmount(t, view)
 
-		// viewWorkDir := filepath.Join(view, "wcow_workaround")
+		viewWorkDir := filepath.Join(view, "wcow_workaround")
 
-		// if err := fstest.CheckDirectoryEqual(viewWorkDir, flat); err != nil {
-		// 	t.Fatalf("fullview should equal to flat: %+v", err)
-		// }
+		if err := fstest.CheckDirectoryEqual(viewWorkDir, flat); err != nil {
+			t.Fatalf("fullview should equal to flat: %+v", err)
+		}
 	}
 }
 
@@ -1141,5 +1140,52 @@ func checkWalk(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshot
 				break
 			}
 		}
+	}
+}
+
+func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string) {
+	return func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string) {
+
+		parent := ""
+		for i := 1; i <= 127; i++ {
+			preparing := filepath.Join(work, fmt.Sprintf("prepare-layer-%d", i))
+			if err := os.MkdirAll(preparing, 0777); err != nil {
+				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
+			}
+
+			mounts, err := snapshotter.Prepare(ctx, preparing, parent, opt)
+			if err != nil {
+				t.Fatalf("[layer %d] failed to get mount info: %+v", i, err)
+			}
+
+			if err := mount.All(mounts, preparing); err != nil {
+				t.Fatalf("[layer %d] failed to mount on the target(%s): %+v", i, preparing, err)
+			}
+
+			t.Log("mount", preparing)
+
+			testutil.Unmount(t, preparing)
+
+			parent = filepath.Join(work, fmt.Sprintf("committed-%d", i))
+			if err := snapshotter.Commit(ctx, parent, preparing, opt); err != nil {
+				t.Fatalf("[layer %d] failed to commit the preparing: %+v", i, err)
+			}
+
+		}
+
+		view := filepath.Join(work, "fullview")
+		if err := os.MkdirAll(view, 0777); err != nil {
+			t.Fatalf("failed to create fullview dir(%s): %+v", view, err)
+		}
+
+		mounts, err := snapshotter.View(ctx, view, parent, opt)
+		if err != nil {
+			t.Fatalf("failed to get view's mount info: %+v", err)
+		}
+
+		if err := mount.All(mounts, view); err != nil {
+			t.Fatalf("failed to mount on the target(%s): %+v", view, err)
+		}
+		defer testutil.Unmount(t, view)
 	}
 }
