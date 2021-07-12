@@ -426,8 +426,19 @@ func (s *snapshotter) createSnapshot(ctx context.Context, kind snapshots.Kind, k
 				return nil, errors.Wrap(err, "failed to make UVM's scratch layer")
 			}
 		}
+		/* @tbble: This is the *only* hcsshim call different between passing and failing. Reverting to hcsshim.CreateScratchLayer
 		if err := s.createScratchLayer(ctx, snDir, parentLayerPaths, sizeGB); err != nil {
 			return nil, errors.Wrap(err, "failed to create scratch layer")
+		}
+		*/
+		if err := hcsshim.CreateScratchLayer(s.info, filepath.Base(snDir), "", parentLayerPaths); err != nil {
+			return nil, errors.Wrap(err, "failed to create scratch layer")
+		}
+
+		if sizeGB > 20 {
+			if err := hcsshim.ExpandScratchSize(s.info, filepath.Base(snDir), uint64(sizeGB)); err != nil {
+				return nil, errors.Wrap(err, "failed to expand scratch layer")
+			}
 		}
 	}
 
