@@ -1153,18 +1153,18 @@ func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T,
 				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
 			}
 
-			mounts, err := snapshotter.Prepare(ctx, preparing, parent, opt)
+			_, err := snapshotter.Prepare(ctx, preparing, parent, opt)
 			if err != nil {
 				t.Fatalf("[layer %d] failed to get mount info: %+v", i, err)
 			}
 
-			if err := mount.All(mounts, preparing); err != nil {
-				t.Fatalf("[layer %d] failed to mount on the target(%s): %+v", i, preparing, err)
-			}
+			// if err := mount.All(mounts, preparing); err != nil {
+			// 	t.Fatalf("[layer %d] failed to mount on the target(%s): %+v", i, preparing, err)
+			// }
 
-			t.Log("mount", preparing)
+			// t.Log("mount", preparing)
 
-			testutil.Unmount(t, preparing)
+			// testutil.Unmount(t, preparing)
 
 			parent = filepath.Join(work, fmt.Sprintf("committed-%d", i))
 			if err := snapshotter.Commit(ctx, parent, preparing, opt); err != nil {
