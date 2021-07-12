@@ -1178,20 +1178,5 @@ func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T,
 			}
 
 		}
-
-		view := filepath.Join(work, "fullview")
-		if err := os.MkdirAll(view, 0777); err != nil {
-			t.Fatalf("failed to create fullview dir(%s): %+v", view, err)
-		}
-
-		mounts, err := snapshotter.View(ctx, view, parent, opt)
-		if err != nil {
-			t.Fatalf("failed to get view's mount info: %+v", err)
-		}
-
-		if err := mount.All(mounts, view); err != nil {
-			t.Fatalf("failed to mount on the target(%s): %+v", view, err)
-		}
-		defer testutil.Unmount(t, view)
 	}
 }
