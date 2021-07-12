@@ -954,11 +954,11 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 
 			t.Log("mount", preparing)
 
-			preparingWorkDir := filepath.Join(preparing, "wcow_workaround")
-			if err := os.MkdirAll(preparingWorkDir, 0777); err != nil {
-				testutil.Unmount(t, preparing)
-				t.Fatalf("[layer %d] failed to create workdir: %+v", i, err)
-			}
+			// preparingWorkDir := filepath.Join(preparing, "wcow_workaround")
+			// if err := os.MkdirAll(preparingWorkDir, 0777); err != nil {
+			// 	testutil.Unmount(t, preparing)
+			// 	t.Fatalf("[layer %d] failed to create workdir: %+v", i, err)
+			// }
 
 			// if err := fstest.CheckDirectoryEqual(preparingWorkDir, flat); err != nil {
 			// 	testutil.Unmount(t, preparing)
