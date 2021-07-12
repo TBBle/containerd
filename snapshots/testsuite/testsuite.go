@@ -49,32 +49,37 @@ func SnapshotterSuite(t *testing.T, name string, snapshotterFn SnapshotterFunc) 
 	restoreMask := clearMask()
 	defer restoreMask()
 
-	t.Run("Basic", makeTest(name, snapshotterFn, checkSnapshotterBasic))
-	t.Run("StatActive", makeTest(name, snapshotterFn, checkSnapshotterStatActive))
-	t.Run("StatComitted", makeTest(name, snapshotterFn, checkSnapshotterStatCommitted))
-	t.Run("TransitivityTest", makeTest(name, snapshotterFn, checkSnapshotterTransitivity))
-	t.Run("PreareViewFailingtest", makeTest(name, snapshotterFn, checkSnapshotterPrepareView))
-	t.Run("Update", makeTest(name, snapshotterFn, checkUpdate))
-	t.Run("Remove", makeTest(name, snapshotterFn, checkRemove))
-	t.Run("Walk", makeTest(name, snapshotterFn, checkWalk))
+	/*
+		t.Run("Basic", makeTest(name, snapshotterFn, checkSnapshotterBasic))
+		t.Run("StatActive", makeTest(name, snapshotterFn, checkSnapshotterStatActive))
+		t.Run("StatComitted", makeTest(name, snapshotterFn, checkSnapshotterStatCommitted))
+		t.Run("TransitivityTest", makeTest(name, snapshotterFn, checkSnapshotterTransitivity))
+		t.Run("PreareViewFailingtest", makeTest(name, snapshotterFn, checkSnapshotterPrepareView))
+		t.Run("Update", makeTest(name, snapshotterFn, checkUpdate))
+		t.Run("Remove", makeTest(name, snapshotterFn, checkRemove))
+		t.Run("Walk", makeTest(name, snapshotterFn, checkWalk))
 
-	t.Run("LayerFileupdate", makeTest(name, snapshotterFn, checkLayerFileUpdate))
-	t.Run("RemoveDirectoryInLowerLayer", makeTest(name, snapshotterFn, checkRemoveDirectoryInLowerLayer))
-	t.Run("Chown", makeTest(name, snapshotterFn, checkChown))
-	t.Run("DirectoryPermissionOnCommit", makeTest(name, snapshotterFn, checkDirectoryPermissionOnCommit))
-	t.Run("RemoveIntermediateSnapshot", makeTest(name, snapshotterFn, checkRemoveIntermediateSnapshot))
-	t.Run("DeletedFilesInChildSnapshot", makeTest(name, snapshotterFn, checkDeletedFilesInChildSnapshot))
-	t.Run("MoveFileFromLowerLayer", makeTest(name, snapshotterFn, checkFileFromLowerLayer))
-	t.Run("Rename", makeTest(name, snapshotterFn, checkRename))
+		t.Run("LayerFileupdate", makeTest(name, snapshotterFn, checkLayerFileUpdate))
+		t.Run("RemoveDirectoryInLowerLayer", makeTest(name, snapshotterFn, checkRemoveDirectoryInLowerLayer))
+		t.Run("Chown", makeTest(name, snapshotterFn, checkChown))
+		t.Run("DirectoryPermissionOnCommit", makeTest(name, snapshotterFn, checkDirectoryPermissionOnCommit))
+		t.Run("RemoveIntermediateSnapshot", makeTest(name, snapshotterFn, checkRemoveIntermediateSnapshot))
+		t.Run("DeletedFilesInChildSnapshot", makeTest(name, snapshotterFn, checkDeletedFilesInChildSnapshot))
+		t.Run("MoveFileFromLowerLayer", makeTest(name, snapshotterFn, checkFileFromLowerLayer))
+		t.Run("Rename", makeTest(name, snapshotterFn, checkRename))
 
-	t.Run("ViewReadonly", makeTest(name, snapshotterFn, checkSnapshotterViewReadonly))
+		t.Run("ViewReadonly", makeTest(name, snapshotterFn, checkSnapshotterViewReadonly))
 
-	t.Run("StatInWalk", makeTest(name, snapshotterFn, checkStatInWalk))
-	t.Run("CloseTwice", makeTest(name, snapshotterFn, closeTwice))
-	t.Run("RootPermission", makeTest(name, snapshotterFn, checkRootPermission))
+		t.Run("StatInWalk", makeTest(name, snapshotterFn, checkStatInWalk))
+		t.Run("CloseTwice", makeTest(name, snapshotterFn, closeTwice))
+		t.Run("RootPermission", makeTest(name, snapshotterFn, checkRootPermission))
 
-	t.Run("128LayersMount", makeTest(name, snapshotterFn, check128LayersMount(name)))
-	t.Run("128LayersMountAgain", makeTest(name, snapshotterFn, check128LayersMount(name)))
+		t.Run("128LayersMount", makeTest(name, snapshotterFn, check128LayersMount(name)))
+		t.Run("128LayersMountAgain", makeTest(name, snapshotterFn, check128LayersMount(name)))
+	*/
+	for i := 1; i <= 10; i++ {
+		t.Run(fmt.Sprintf("128LayersMount_%02d", i), makeTest(name, snapshotterFn, check128LayersMount(name)))
+	}
 }
 
 func makeTest(name string, snapshotterFn func(ctx context.Context, root string) (snapshots.Snapshotter, func() error, error), fn func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string)) func(t *testing.T) {
