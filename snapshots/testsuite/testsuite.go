@@ -1166,6 +1166,8 @@ func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T,
 
 			testutil.Unmount(t, preparing)
 
+			time.Sleep(time.Millisecond * 1000)
+
 			parent = filepath.Join(work, fmt.Sprintf("committed-%d", i))
 			if err := snapshotter.Commit(ctx, parent, preparing, opt); err != nil {
 				t.Fatalf("[layer %d] failed to commit the preparing: %+v", i, err)
