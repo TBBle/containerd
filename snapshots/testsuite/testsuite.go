@@ -930,14 +930,14 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 			))
 		}
 
-		flat := filepath.Join(work, "flat")
-		if err := os.MkdirAll(flat, 0777); err != nil {
-			t.Fatalf("failed to create flat dir(%s): %+v", flat, err)
-		}
+		// flat := filepath.Join(work, "flat")
+		// if err := os.MkdirAll(flat, 0777); err != nil {
+		// 	t.Fatalf("failed to create flat dir(%s): %+v", flat, err)
+		// }
 
 		// NOTE: add gc labels to avoid snapshots get removed by gc...
 		parent := ""
-		for i, applier := range appliers {
+		for i := range appliers {
 			preparing := filepath.Join(work, fmt.Sprintf("prepare-layer-%d", i))
 			if err := os.MkdirAll(preparing, 0777); err != nil {
 				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
@@ -965,10 +965,10 @@ func check128LayersMount(name string) func(ctx context.Context, t *testing.T, sn
 			// 	t.Fatalf("[layer %d] preparing doesn't equal to flat before apply: %+v", i, err)
 			// }
 
-			if err := applier.Apply(flat); err != nil {
-				testutil.Unmount(t, preparing)
-				t.Fatalf("[layer %d] failed to apply on flat dir: %+v", i, err)
-			}
+			// if err := applier.Apply(flat); err != nil {
+			// 	testutil.Unmount(t, preparing)
+			// 	t.Fatalf("[layer %d] failed to apply on flat dir: %+v", i, err)
+			// }
 
 			// if err = applier.Apply(preparingWorkDir); err != nil {
 			// 	testutil.Unmount(t, preparing)
