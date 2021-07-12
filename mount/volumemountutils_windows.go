@@ -77,7 +77,7 @@ func deleteVolumeMountPoint(targetPath string) error {
 		return errors.Wrapf(err, "failed calling DeleteVolumeMountPoint('%s')", slashedTarget)
 	}
 
-	// Strip the trailing slash off for CreaetFile.
+	// Strip the trailing slash off for CreateFile.
 	if volumeName[len(volumeName)-1] == filepath.Separator {
 		volumeName = volumeName[:len(volumeName)-1]
 	}
