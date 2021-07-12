@@ -184,15 +184,16 @@ func Unmount(mount string, flags int) error {
 			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
 		}
 	*/
+	/*
+		if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to deactivate layer %s", mount)
+		}
 
-	if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
-		return errors.Wrapf(err, "failed to deactivate layer %s", mount)
-	}
-
-	// Activate and deactivate the layer to ensure it's flushed to disk.
-	if err = hcsshim.ActivateLayer(di, layerID); err != nil {
-		return errors.Wrapf(err, "failed to activate layer %s", mount)
-	}
+		// Activate and deactivate the layer to ensure it's flushed to disk.
+		if err = hcsshim.ActivateLayer(di, layerID); err != nil {
+			return errors.Wrapf(err, "failed to activate layer %s", mount)
+		}
+	*/
 
 	if err := hcsshim.DeactivateLayer(di, layerID); err != nil {
 		return errors.Wrapf(err, "failed to deactivate layer %s", mount)
