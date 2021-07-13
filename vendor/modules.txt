@@ -8,7 +8,7 @@ github.com/Microsoft/go-winio/pkg/fs
 github.com/Microsoft/go-winio/pkg/guid
 github.com/Microsoft/go-winio/pkg/security
 github.com/Microsoft/go-winio/vhd
-# github.com/Microsoft/hcsshim v0.8.18 => github.com/TBBle/hcsshim v0.8.18-0.20210712024940-d8e1acd154c2
+# github.com/Microsoft/hcsshim v0.8.18 => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
 ## explicit
 github.com/Microsoft/hcsshim
 github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options
@@ -334,6 +334,7 @@ go.etcd.io/bbolt
 # go.mozilla.org/pkcs7 v0.0.0-20200128120323-432b2356ecb1
 go.mozilla.org/pkcs7
 # go.opencensus.io v0.22.3
+## explicit
 go.opencensus.io
 go.opencensus.io/internal
 go.opencensus.io/trace
@@ -598,7 +599,7 @@ k8s.io/utils/integer
 sigs.k8s.io/structured-merge-diff/v4/value
 # sigs.k8s.io/yaml v1.2.0
 sigs.k8s.io/yaml
-# github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210712024940-d8e1acd154c2
+# github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
 # github.com/containerd/containerd => ./.empty-mod/
 # github.com/gogo/googleapis => github.com/gogo/googleapis v1.3.2
 # github.com/urfave/cli => github.com/urfave/cli v1.22.1

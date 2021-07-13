@@ -32,7 +32,7 @@ replace (
 	// Replace rules below must be kept in sync with the main go.mod file at the
 	// root, because that's the actual version expected by the "containerd/containerd"
 	// dependency above.
-	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210712024940-d8e1acd154c2
+	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
 	github.com/gogo/googleapis => github.com/gogo/googleapis v1.3.2
 	// urfave/cli must be <= v1.22.1 due to a regression: https://github.com/urfave/cli/issues/1092
 	github.com/urfave/cli => github.com/urfave/cli v1.22.1

@@ -52,6 +52,7 @@ require (
 	github.com/tchap/go-patricia v2.2.6+incompatible
 	github.com/urfave/cli v1.22.2
 	go.etcd.io/bbolt v1.3.5
+	go.opencensus.io v0.22.3
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887
@@ -70,7 +71,7 @@ require (
 
 // When updating replace rules, make sure to also update the rules in integration/client/go.mod
 replace (
-	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210712024940-d8e1acd154c2
+	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
 	// prevent transitional dependencies due to containerd having a circular
 	// dependency on itself through plugins. see .empty-mod/go.mod for details
 	github.com/containerd/containerd => ./.empty-mod/
