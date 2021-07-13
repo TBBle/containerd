@@ -1152,29 +1152,34 @@ func checkWalk(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshot
 func check128LayersLockstep(name string) func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string) {
 	return func(ctx context.Context, t *testing.T, snapshotter snapshots.Snapshotter, work string) {
 
-		parent := ""
+		committedKey := ""
 		for i := 1; i <= 128; i++ {
-			preparing := filepath.Join(work, fmt.Sprintf("prepare-layer-%d", i))
-			if err := os.MkdirAll(preparing, 0777); err != nil {
-				t.Fatalf("[layer %d] failed to create preparing dir(%s): %+v", i, preparing, err)
-			}
-
-			mounts, err := snapshotter.Prepare(ctx, preparing, parent, opt)
+			preparingKey := fmt.Sprintf("prepare-layer-%d", i)
+			mounts, err := snapshotter.Prepare(ctx, preparingKey, committedKey, opt)
 			if err != nil {
-				t.Fatalf("[layer %d] failed to get mount info: %+v", i, err)
+				t.Fatalf("[layer %d] failed to create %s based on %s: %+v", i, preparingKey, committedKey, err)
 			}
 
-			if err := mount.All(mounts, preparing); err != nil {
-				t.Fatalf("[layer %d] failed to mount on the target(%s): %+v", i, preparing, err)
+			preparingMount := filepath.Join(work, preparingKey)
+			if err := os.MkdirAll(preparingMount, 0777); err != nil {
+				t.Fatalf("[layer %d] failed to create preparing mount dir(%s): %+v", i, preparingMount, err)
 			}
 
-			t.Log("mount", preparing)
+			if err := mount.All(mounts, preparingMount); err != nil {
+				t.Fatalf("[layer %d] failed to mount on the mount dir(%s): %+v", i, preparingMount, err)
+			}
 
-			testutil.Unmount(t, preparing)
+			t.Log("mount", preparingMount)
 
-			parent = filepath.Join(work, fmt.Sprintf("committed-%d", i))
-			if err := snapshotter.Commit(ctx, parent, preparing, opt); err != nil {
-				t.Fatalf("[layer %d] failed to commit the preparing: %+v", i, err)
+			testutil.Unmount(t, preparingMount)
+
+			if err := os.RemoveAll(preparingMount); err != nil {
+				t.Fatalf("[layer %d] failed to remove preparing mount dir(%s): %+v", i, preparingMount, err)
+			}
+
+			committedKey = fmt.Sprintf("committed-%d", i)
+			if err := snapshotter.Commit(ctx, committedKey, preparingKey, opt); err != nil {
+				t.Fatalf("[layer %d] failed to commit %s to %s: %+v", i, preparingKey, committedKey, err)
 			}
 
 		}
