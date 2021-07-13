@@ -8,7 +8,7 @@ github.com/Microsoft/go-winio/pkg/fs
 github.com/Microsoft/go-winio/pkg/guid
 github.com/Microsoft/go-winio/pkg/security
 github.com/Microsoft/go-winio/vhd
-# github.com/Microsoft/hcsshim v0.8.18 => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
+# github.com/Microsoft/hcsshim v0.8.18 => github.com/TBBle/hcsshim v0.8.18-0.20210714035540-4064d7c8ccf7
 ## explicit
 github.com/Microsoft/hcsshim
 github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options
@@ -599,7 +599,7 @@ k8s.io/utils/integer
 sigs.k8s.io/structured-merge-diff/v4/value
 # sigs.k8s.io/yaml v1.2.0
 sigs.k8s.io/yaml
-# github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
+# github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210714035540-4064d7c8ccf7
 # github.com/containerd/containerd => ./.empty-mod/
 # github.com/gogo/googleapis => github.com/gogo/googleapis v1.3.2
 # github.com/urfave/cli => github.com/urfave/cli v1.22.1

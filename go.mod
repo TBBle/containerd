@@ -71,7 +71,7 @@ require (
 
 // When updating replace rules, make sure to also update the rules in integration/client/go.mod
 replace (
-	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210713051833-9fb5677a47b9
+	github.com/Microsoft/hcsshim => github.com/TBBle/hcsshim v0.8.18-0.20210714035540-4064d7c8ccf7
 	// prevent transitional dependencies due to containerd having a circular
 	// dependency on itself through plugins. see .empty-mod/go.mod for details
 	github.com/containerd/containerd => ./.empty-mod/
